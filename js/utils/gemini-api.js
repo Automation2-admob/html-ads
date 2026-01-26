@@ -76,13 +76,15 @@ function selectSuggestion(text) {
 }
 
 // Translate Tagline using Google Translate API (Free Method)
+// Translate BOTH Title and Tagline using Google Translate API
 async function translateTagline() {
-    const tagline = document.getElementById('app-tagline').value;
+    const title = document.getElementById('app-title')?.value || '';
+    const tagline = document.getElementById('app-tagline')?.value || '';
     const languageSelect = document.getElementById('language-select');
-    const targetLang = languageSelect.value; // This is the language code
+    const targetLang = languageSelect.value;
 
-    if (!tagline) {
-        alert('Please enter a tagline first');
+    if (!title && !tagline) {
+        alert('Please enter app title or tagline first');
         return;
     }
 
@@ -96,17 +98,33 @@ async function translateTagline() {
     btn.disabled = true;
 
     try {
-        // Using Google Translate's public API endpoint
-        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(tagline)}`;
-        
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        if (data && data[0] && data[0][0]) {
-            const translated = data[0][0][0];
-            document.getElementById('app-tagline').value = translated;
-            updateAdData('tagline', translated);
+        // Translate Title
+        if (title) {
+            const titleUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(title)}`;
+            const titleResponse = await fetch(titleUrl);
+            const titleData = await titleResponse.json();
+            
+            if (titleData && titleData[0] && titleData[0][0]) {
+                const translatedTitle = titleData[0][0][0];
+                document.getElementById('app-title').value = translatedTitle;
+                updateAdData('title', translatedTitle);
+            }
         }
+
+        // Translate Tagline
+        if (tagline) {
+            const taglineUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(tagline)}`;
+            const taglineResponse = await fetch(taglineUrl);
+            const taglineData = await taglineResponse.json();
+            
+            if (taglineData && taglineData[0] && taglineData[0][0]) {
+                const translatedTagline = taglineData[0][0][0];
+                document.getElementById('app-tagline').value = translatedTagline;
+                updateAdData('tagline', translatedTagline);
+            }
+        }
+
+        alert('Translation completed!');
 
     } catch (error) {
         console.error('Translation Error:', error);
