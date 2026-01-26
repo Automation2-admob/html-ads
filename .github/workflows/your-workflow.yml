@@ -1,0 +1,75 @@
+name: AdMob Apps List Fetch (CSV)
+
+on:
+  schedule:
+    - cron: '0 4 * * 1'      # Every Monday at 04:00 UTC = 09:00 AM PKT
+  workflow_dispatch:         # Allows manual run anytime from GitHub UI
+
+jobs:
+  fetch-admob-apps:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests pandas
+
+      - name: Run script to fetch latest AdMob apps list
+        env:
+          CLIENT_ID_MEDIA_TECH: ${{ secrets.CLIENT_ID_MEDIA_TECH }}
+          CLIENT_SECRET_MEDIA_TECH: ${{ secrets.CLIENT_SECRET_MEDIA_TECH }}
+          REFRESH_TOKEN_MEDIA_TECH: ${{ secrets.REFRESH_TOKEN_MEDIA_TECH }}
+          CLIENT_ID_TOOL_APPS_HUB: ${{ secrets.CLIENT_ID_TOOL_APPS_HUB }}
+          CLIENT_SECRET_TOOL_APPS_HUB: ${{ secrets.CLIENT_SECRET_TOOL_APPS_HUB }}
+          REFRESH_TOKEN_TOOL_APPS_HUB: ${{ secrets.REFRESH_TOKEN_TOOL_APPS_HUB }}
+          CLIENT_ID_EAGLE_APPS: ${{ secrets.CLIENT_ID_EAGLE_APPS }}
+          CLIENT_SECRET_EAGLE_APPS: ${{ secrets.CLIENT_SECRET_EAGLE_APPS }}
+          REFRESH_TOKEN_EAGLE_APPS: ${{ secrets.REFRESH_TOKEN_EAGLE_APPS }}
+          CLIENT_ID_8TH_GENERATION_APPS: ${{ secrets.CLIENT_ID_8TH_GENERATION_APPS }}
+          CLIENT_SECRET_8TH_GENERATION_APPS: ${{ secrets.CLIENT_SECRET_8TH_GENERATION_APPS }}
+          REFRESH_TOKEN_8TH_GENERATION_APPS: ${{ secrets.REFRESH_TOKEN_8TH_GENERATION_APPS }}
+          CLIENT_ID_APPS_RESORT_DAILY_TOOL_APPS: ${{ secrets.CLIENT_ID_APPS_RESORT_DAILY_TOOL_APPS }}
+          CLIENT_SECRET_APPS_RESORT_DAILY_TOOL_APPS: ${{ secrets.CLIENT_SECRET_APPS_RESORT_DAILY_TOOL_APPS }}
+          REFRESH_TOKEN_APPS_RESORT_DAILY_TOOL_APPS: ${{ secrets.REFRESH_TOKEN_APPS_RESORT_DAILY_TOOL_APPS }}
+          CLIENT_ID_HI_SHOT_INC: ${{ secrets.CLIENT_ID_HI_SHOT_INC }}
+          CLIENT_SECRET_HI_SHOT_INC: ${{ secrets.CLIENT_SECRET_HI_SHOT_INC }}
+          REFRESH_TOKEN_HI_SHOT_INC: ${{ secrets.REFRESH_TOKEN_HI_SHOT_INC }}
+          CLIENT_ID_QUANTAM_LEAPS: ${{ secrets.CLIENT_ID_QUANTAM_LEAPS }}
+          CLIENT_SECRET_QUANTAM_LEAPS: ${{ secrets.CLIENT_SECRET_QUANTAM_LEAPS }}
+          REFRESH_TOKEN_QUANTAM_LEAPS: ${{ secrets.REFRESH_TOKEN_QUANTAM_LEAPS }}
+          CLIENT_ID_APP_X_TECH: ${{ secrets.CLIENT_ID_APP_X_TECH }}
+          CLIENT_SECRET_APP_X_TECH: ${{ secrets.CLIENT_SECRET_APP_X_TECH }}
+          REFRESH_TOKEN_APP_X_TECH: ${{ secrets.REFRESH_TOKEN_APP_X_TECH }}
+          CLIENT_ID_EMERGING_GAMES_STUDIO: ${{ secrets.CLIENT_ID_EMERGING_GAMES_STUDIO }}
+          CLIENT_SECRET_EMERGING_GAMES_STUDIO: ${{ secrets.CLIENT_SECRET_EMERGING_GAMES_STUDIO }}
+          REFRESH_TOKEN_EMERGING_GAMES_STUDIO: ${{ secrets.REFRESH_TOKEN_EMERGING_GAMES_STUDIO }}
+          CLIENT_ID_MARITIME_SIMULATION_GAMES: ${{ secrets.CLIENT_ID_MARITIME_SIMULATION_GAMES }}
+          CLIENT_SECRET_MARITIME_SIMULATION_GAMES: ${{ secrets.CLIENT_SECRET_MARITIME_SIMULATION_GAMES }}
+          REFRESH_TOKEN_MARITIME_SIMULATION_GAMES: ${{ secrets.REFRESH_TOKEN_MARITIME_SIMULATION_GAMES }}
+          CLIENT_ID_FUNSOL_GAMING_LAB: ${{ secrets.CLIENT_ID_FUNSOL_GAMING_LAB }}
+          CLIENT_SECRET_FUNSOL_GAMING_LAB: ${{ secrets.CLIENT_SECRET_FUNSOL_GAMING_LAB }}
+          REFRESH_TOKEN_FUNSOL_GAMING_LAB: ${{ secrets.REFRESH_TOKEN_FUNSOL_GAMING_LAB }}
+          CLIENT_ID_GAMING_STARS: ${{ secrets.CLIENT_ID_GAMING_STARS }}
+          CLIENT_SECRET_GAMING_STARS: ${{ secrets.CLIENT_SECRET_GAMING_STARS }}
+          REFRESH_TOKEN_GAMING_STARS: ${{ secrets.REFRESH_TOKEN_GAMING_STARS }}
+
+        run: python admob_report.py
+
+      # Optional but recommended: Commit the fresh CSV back to repo
+      - name: Commit and push latest apps list
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add admob_apps_list.csv
+          git commit -m "Update AdMob apps list - latest snapshot $(date +'%Y-%m-%d')" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
