@@ -1,21 +1,21 @@
-async function generateOrbitTemplateHTML() {
+async function generateTemplate2HTML() {
     return `<!doctype html>
 <html lang="en" style="height: 100%;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>\${adData.title} - Feature Orbit Ad</title>
+    <title>App Feature Ad</title>
     
     <script src="https://tpc.googlesyndication.com/pagead/gadgets/html5/api/exitapi.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Force crisp white text */
+        /* Force all text to be pure white and remove faddiness */
         #app-title, #app-tagline, .feature-text, .text-xs, #btn-text {
             color: #FFFFFF !important;
-            opacity: 1 !important;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            opacity: 1 !important; /* Removes the "fade" effect */
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3); /* Adds crispness */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,7 +23,6 @@ async function generateOrbitTemplateHTML() {
             height: 100%; 
             font-family: 'Space Grotesk', sans-serif; 
             overflow: hidden;
-            background: radial-gradient(circle at center, #1a1a3e 0%, #0f0f23 100%);
         }
 
         #ad-container {
@@ -59,71 +58,19 @@ async function generateOrbitTemplateHTML() {
             cursor: pointer;
             text-align: center;
             padding: 12px;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.12);
         }
-        .feature-circle.active { 
-            width: 140px; 
-            height: 140px; 
-            top: 0; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            z-index: 30; 
-            box-shadow: 0 20px 60px rgba(139, 92, 246, 0.4); 
-        }
-        .feature-circle.left { 
-            width: 100px; 
-            height: 100px; 
-            bottom: 20px; 
-            left: 10px; 
-            z-index: 20; 
-            opacity: 0.7; 
-        }
-        .feature-circle.right { 
-            width: 100px; 
-            height: 100px; 
-            bottom: 20px; 
-            right: 10px; 
-            z-index: 20; 
-            opacity: 0.7; 
-        }
+        .feature-circle.active { width: 140px; height: 140px; top: 0; left: 50%; transform: translateX(-50%); z-index: 30; box-shadow: 0 20px 60px rgba(139, 92, 246, 0.4); }
+        .feature-circle.left { width: 100px; height: 100px; bottom: 20px; left: 10px; z-index: 20; opacity: 0.7; }
+        .feature-circle.right { width: 100px; height: 100px; bottom: 20px; right: 10px; z-index: 20; opacity: 0.7; }
         
-        .feature-icon { 
-            width: 70px; 
-            height: 70px; 
-            object-fit: cover; 
-            border-radius: 12px; 
-            margin-bottom: 8px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
-        }
-        .feature-circle.left .feature-icon, 
-        .feature-circle.right .feature-icon { 
-            width: 50px; 
-            height: 50px; 
-        }
+        .feature-icon { width: 70px; height: 70px; object-fit: cover; border-radius: 12px; margin-bottom: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .feature-circle.left .feature-icon, .feature-circle.right .feature-icon { width: 50px; height: 50px; }
         
-        .feature-text { 
-            font-size: 0.75rem; 
-            font-weight: 600; 
-            line-height: 1.2; 
-        }
-        .feature-circle.left .feature-text, 
-        .feature-circle.right .feature-text { 
-            font-size: 0.6rem; 
-        }
+        .feature-text { font-size: 0.75rem; font-weight: 600; line-height: 1.2; }
+        .feature-circle.left .feature-text, .feature-circle.right .feature-text { font-size: 0.6rem; }
         
-        .glow-ring { 
-            position: absolute; 
-            top: -8px; left: -8px; right: -8px; bottom: -8px; 
-            border-radius: 50%; 
-            border: 2px solid rgba(139, 92, 246, 0.3); 
-            animation: pulse-ring 2s ease-in-out infinite; 
-        }
-        @keyframes pulse-ring { 
-            0%, 100% { transform: scale(1); opacity: 0.5; } 
-            50% { transform: scale(1.1); opacity: 0.2; } 
-        }
+        .glow-ring { position: absolute; top: -8px; left: -8px; right: -8px; bottom: -8px; border-radius: 50%; border: 2px solid rgba(139, 92, 246, 0.3); animation: pulse-ring 2s ease-in-out infinite; }
+        @keyframes pulse-ring { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 0.2; } }
 
         .download-btn {
             position: relative;
@@ -136,46 +83,16 @@ async function generateOrbitTemplateHTML() {
             border: none;
             cursor: pointer;
             font-family: inherit;
-            font-size: 1rem;
-            font-weight: 700;
-            color: white;
-            background: linear-gradient(135deg, #8b5cf6, #6366f1);
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
             transition: transform 0.3s ease;
         }
         .download-btn:hover { transform: scale(1.05); }
 
-        .particle { 
-            position: absolute; 
-            width: 4px; 
-            height: 4px; 
-            border-radius: 50%; 
-            background: #FFFFFF; 
-            animation: float-particle 3s ease-in-out infinite; 
-        }
-        @keyframes float-particle { 
-            0%, 100% { transform: translateY(0); opacity: 0.6; } 
-            50% { transform: translateY(-20px); opacity: 1; } 
-        }
+        .particle { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #FFFFFF; animation: float-particle 3s ease-in-out infinite; }
+        @keyframes float-particle { 0%, 100% { transform: translateY(0); opacity: 0.6; } 50% { transform: translateY(-20px); opacity: 1; } }
 
-        .progress-dots { 
-            display: flex; 
-            gap: 8px; 
-            justify-content: center; 
-        }
-        .progress-dot { 
-            width: 8px; 
-            height: 8px; 
-            border-radius: 50%; 
-            transition: all 0.3s ease; 
-            cursor: pointer; 
-            background: rgba(255,255,255,0.3); 
-        }
-        .progress-dot.active { 
-            width: 24px; 
-            border-radius: 4px; 
-            background: #FFFFFF; 
-        }
+        .progress-dots { display: flex; gap: 8px; justify-content: center; }
+        .progress-dot { width: 8px; height: 8px; border-radius: 50%; transition: all 0.3s ease; cursor: pointer; background: rgba(255,255,255,0.3); }
+        .progress-dot.active { width: 24px; border-radius: 4px; background: #FFFFFF; }
     </style>
 </head>
 <body>
@@ -186,30 +103,30 @@ async function generateOrbitTemplateHTML() {
         <div class="particle" style="bottom: 20%; right: 15%; animation-delay: 1.5s;"></div>
 
         <div class="text-center mb-4">
-            <h1 id="app-title" class="text-2xl font-bold">\${adData.title}</h1>
-            <p id="app-tagline" class="text-sm">\${adData.tagline}</p>
+            <h1 id="app-title" class="text-2xl font-bold"></h1>
+            <p id="app-tagline" class="text-sm"></p>
         </div>
 
         <div class="feature-orbit mb-6">
             <div class="feature-circle" id="feature-0" data-index="0">
                 <div class="glow-ring"></div>
                 <img class="feature-icon" id="feature-img-0" src="feature_1_image.png" alt="Feature 1" loading="lazy"> 
-                <span class="feature-text" id="feature-text-0">Real-Time Protection</span>
+                <span class="feature-text" id="feature-text-0"></span>
             </div>
             <div class="feature-circle" id="feature-1" data-index="1">
                 <div class="glow-ring"></div>
                 <img class="feature-icon" id="feature-img-1" src="feature_2_image.png" alt="Feature 2" loading="lazy"> 
-                <span class="feature-text" id="feature-text-1">Deep Clean</span>
+                <span class="feature-text" id="feature-text-1"></span>
             </div>
             <div class="feature-circle" id="feature-2" data-index="2">
                 <div class="glow-ring"></div>
                 <img class="feature-icon" id="feature-img-2" src="feature_3_image.png" alt="Feature 3" loading="lazy"> 
-                <span class="feature-text" id="feature-text-2">Performance Boost</span>
+                <span class="feature-text" id="feature-text-2"></span>
             </div>
         </div>
 
         <div class="progress-dots mb-6">
-            <div class="progress-dot active" data-index="0"></div>
+            <div class="progress-dot" data-index="0"></div>
             <div class="progress-dot" data-index="1"></div>
             <div class="progress-dot" data-index="2"></div>
         </div>
@@ -224,21 +141,32 @@ async function generateOrbitTemplateHTML() {
         <p class="text-xs mt-3">Tap circles to explore features</p>
     </div>
 
-    <script>
+    <script type="text/javascript">
+        const config = {
+            app_name: 'Anti Virus: Virus Cleaner',
+            tagline: 'Keep Your Phone Virus-Free',
+            feature_1_title: 'Scan Phone Viruses',
+            feature_2_title: 'Clean Junk Files',
+            feature_3_title: 'Battery Info',
+            background_color: '#0f0f23',
+            surface_color: '#1a1a3e',
+            text_color: '#FFFFFF',
+            primary_action_color: '#8b5cf6',
+            secondary_action_color: '#06b6d4'
+        };
+
         let activeIndex = 0;
         let autoRotateInterval;
 
         function updateFeaturePositions() {
             const circles = document.querySelectorAll('.feature-circle');
             const dots = document.querySelectorAll('.progress-dot');
-            
             circles.forEach((circle, i) => {
                 circle.classList.remove('active', 'left', 'right');
                 if (i === activeIndex) circle.classList.add('active');
                 else if (i === (activeIndex + 2) % 3) circle.classList.add('left');
                 else circle.classList.add('right');
             });
-            
             dots.forEach((dot, i) => {
                 dot.classList.toggle('active', i === activeIndex);
             });
@@ -255,14 +183,20 @@ async function generateOrbitTemplateHTML() {
         }
 
         function init() {
-            // Images are static → no need to change src dynamically here
+            document.getElementById('app-title').textContent = config.app_name;
+            document.getElementById('app-tagline').textContent = config.tagline;
+            document.getElementById('feature-text-0').textContent = config.feature_1_title;
+            document.getElementById('feature-text-1').textContent = config.feature_2_title;
+            document.getElementById('feature-text-2').textContent = config.feature_3_title;
+            
+            const container = document.getElementById('ad-container');
+            container.style.background = `linear-gradient(135deg, ${config.background_color}, ${config.surface_color})`;
+            
+            const btn = document.querySelector('.download-btn');
+            btn.style.background = `linear-gradient(135deg, ${config.primary_action_color}, ${config.secondary_action_color})`;
+
             updateFeaturePositions();
             startAutoRotate();
-
-            // Optional: if you later want to allow dynamic feature text via adData
-            // document.getElementById('feature-text-0').textContent = adData.feature1 || 'Real-Time Protection';
-            // document.getElementById('feature-text-1').textContent = adData.feature2 || 'Deep Clean';
-            // document.getElementById('feature-text-2').textContent = adData.feature3 || 'Performance Boost';
         }
 
         document.querySelectorAll('.feature-circle, .progress-dot').forEach(el => {
@@ -276,5 +210,5 @@ async function generateOrbitTemplateHTML() {
         window.addEventListener('load', init);
     </script>
 </body>
-</html>`;
+</html>;
 }
