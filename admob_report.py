@@ -2,7 +2,9 @@ import os
 import csv
 import requests
 
-# ENV setup - secrets from GitHub Actions
+# ────────────────────────────────────────────────
+# Accounts configuration (secrets loaded from GitHub Actions)
+# ────────────────────────────────────────────────
 accounts = [
     {
         "account_name": "MEDIA_TECH",
@@ -104,83 +106,113 @@ def get_access_token(client_id, client_secret, refresh_token):
         response.raise_for_status()
         return response.json()['access_token']
     except requests.exceptions.HTTPError as e:
-        print("❌ Failed to fetch access token:")
-        print(f"Status Code: {e.response.status_code}")
-        print(f"Error Response: {e.response.text}")
+        print("❌ Failed to get access token:")
+        print(f"   Status: {e.response.status_code}")
+        print(f"   Response: {e.response.text}")
         raise
 
 def get_apps_list(publisher_id, access_token):
     url = f"https://admob.googleapis.com/v1/accounts/{publisher_id}/apps"
     headers = {"Authorization": f"Bearer {access_token}"}
     apps = []
+    page_count = 0
+
     while url:
+        page_count += 1
         resp = requests.get(url, headers=headers).json()
+        if 'error' in resp:
+            raise Exception(f"API error: {resp.get('error', {}).get('message', 'Unknown error')}")
+
         for app in resp.get("apps", []):
-            linked_info = app.get("linkedAppInfo", {})
-            manual_info = app.get("manualAppInfo", {})
-            app_info = {
+            linked = app.get("linkedAppInfo", {})
+            manual = app.get("manualAppInfo", {})
+            apps.append({
                 "app_id": app.get("appId", "unknown"),
-                "app_name": linked_info.get("displayName") or manual_info.get("displayName", "unknown"),
-                "package_name": linked_info.get("appStoreId", "unknown"),
+                "app_name": linked.get("displayName") or manual.get("displayName", "unknown"),
+                "package_name": linked.get("appStoreId", "unknown"),
                 "platform": app.get("platform", "unknown")
-            }
-            apps.append(app_info)
+            })
+
         next_page = resp.get("nextPageToken")
         url = f"https://admob.googleapis.com/v1/accounts/{publisher_id}/apps?pageToken={next_page}" if next_page else None
+
+    print(f"   → Fetched {len(apps)} apps ({page_count} page(s))")
     return apps
 
 def save_to_csv(all_data, filename="admob_apps_list.csv"):
     if not all_data:
-        print(f"⚠️ No data to save for {filename}")
-        return None
+        print("⚠️ No apps fetched from any account → CSV not created/overwritten")
+        return
 
     headers = ["account_name", "publisher_id", "app_id", "app_name", "package_name", "platform"]
 
-    # "w" = overwrite / truncate → always fresh data, previous content removed
+    # "w" = always overwrite → previous data removed, only latest successful data kept
     with open(filename, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=headers)
         writer.writeheader()
         for row in all_data:
             writer.writerow(row)
 
-    print(f"✅ Overwrote {filename} with latest data ({len(all_data)} rows)")
-    return filename
+    print(f"✅ Successfully overwrote {filename} with {len(all_data)} rows from successful accounts")
 
 # ────────────────────────────────────────────────
-# Main Execution
+# Main logic — process every account independently
 # ────────────────────────────────────────────────
 all_apps = []
 failed_accounts = []
 
+print("Starting AdMob apps fetch...\n")
+
 for acc in accounts:
-    print(f"📊 Processing account: {acc['account_name']}")
+    name = acc["account_name"]
+    print(f"📊 Processing: {name}")
+
     try:
-        token = get_access_token(acc["client_id"], acc["client_secret"], acc["refresh_token"])
+        # Early check for missing credentials
+        if not acc["client_id"]:
+            raise ValueError("CLIENT_ID is missing/empty in secrets")
+        if not acc["client_secret"]:
+            raise ValueError("CLIENT_SECRET is missing/empty in secrets")
+        if not acc["refresh_token"]:
+            raise ValueError("REFRESH_TOKEN is missing or empty in secrets")
+
+        token = get_access_token(
+            acc["client_id"],
+            acc["client_secret"],
+            acc["refresh_token"]
+        )
+
         apps = get_apps_list(acc["publisher_id"], token)
-        
+
         for app in apps:
             all_apps.append({
-                "account_name": acc["account_name"],
+                "account_name": name,
                 "publisher_id": acc["publisher_id"],
                 "app_id": app["app_id"],
                 "app_name": app["app_name"],
                 "package_name": app["package_name"],
                 "platform": app["platform"]
             })
-        
-        print(f"✅ Fetched {len(apps)} apps from {acc['account_name']}")
-    
+
+        print(f"✅ Success: {name} ({len(apps)} apps fetched)")
+
     except Exception as e:
-        print(f"❌ Failed for {acc['account_name']}: {e}")
-        failed_accounts.append(acc['account_name'])
+        print(f"❌ Failed: {name}")
+        print(f"   → {str(e)}")
+        failed_accounts.append(name)
 
-# Save — always overwrites
-if all_apps:
-    save_to_csv(all_apps)
+# Save result (always overwrites)
+save_to_csv(all_apps)
 
-print("✅ Processing complete.")
-
+print("\n✅ Processing finished.")
 if failed_accounts:
-    print("⚠️ Failed accounts:")
-    for name in failed_accounts:
-        print(f" - {name}")
+    print(f"⚠️ {len(failed_accounts)} account(s) failed:")
+    for acc in failed_accounts:
+        print(f"   - {acc}")
+else:
+    print("All accounts processed successfully!")
+
+if all_apps:
+    print(f"Total apps saved: {len(all_apps)}")
+else:
+    print("No apps were fetched.")
