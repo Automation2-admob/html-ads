@@ -1,50 +1,46 @@
 import os
 import csv
 import requests
+from bs4 import BeautifulSoup  # We'll add this dependency
 
 # ────────────────────────────────────────────────
 # Config
 # ────────────────────────────────────────────────
 CSV_FILE = "admob_apps_list.csv"
 ASSETS_DIR = "assets"
-SERPAPI_KEY = os.getenv("SERPAPI_KEY")
-
-if not SERPAPI_KEY:
-    raise ValueError("❌ SERPAPI_KEY is missing in GitHub secrets — add it to run this script")
-
 os.makedirs(ASSETS_DIR, exist_ok=True)
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+}
 
 # ────────────────────────────────────────────────
 # Functions
 # ────────────────────────────────────────────────
 def fetch_app_icon(package_name):
     """
-    Use SerpAPI to get app icon URL from Google Play, then download PNG.
-    Returns path to saved file or None on failure.
+    Fetch Play Store page → extract og:image meta tag → download PNG.
+    Returns saved path or None.
     """
     try:
-        # SerpAPI Google Play Product endpoint
-        api_url = "https://serpapi.com/search.json"
-        params = {
-            "engine": "google_play_product",
-            "product_id": package_name,
-            "store": "apps",
-            "api_key": SERPAPI_KEY
-        }
-        resp = requests.get(api_url, params=params)
+        url = f"https://play.google.com/store/apps/details?id={package_name}&hl=en_US"
+        resp = requests.get(url, headers=HEADERS, timeout=10)
         resp.raise_for_status()
-        data = resp.json()
         
-        # Extract thumbnail (icon URL)
-        icon_url = data.get("thumbnail")
-        if not icon_url:
-            raise ValueError("No thumbnail found in API response")
+        soup = BeautifulSoup(resp.text, "html.parser")
+        meta_tag = soup.find("meta", property="og:image")
         
-        # Download PNG
-        img_resp = requests.get(icon_url)
+        if not meta_tag or "content" not in meta_tag.attrs:
+            raise ValueError("No og:image meta tag found")
+        
+        icon_url = meta_tag["content"]
+        # Clean up size param if present (get higher res)
+        if "=w" in icon_url:
+            icon_url = icon_url.split("=w")[0] + "=w512"  # Force 512x512
+        
+        img_resp = requests.get(icon_url, headers=HEADERS, timeout=10)
         img_resp.raise_for_status()
         
-        # Save to assets/{package_name}.png
         save_path = os.path.join(ASSETS_DIR, f"{package_name}.png")
         with open(save_path, "wb") as f:
             f.write(img_resp.content)
@@ -56,15 +52,14 @@ def fetch_app_icon(package_name):
         return None
 
 # ────────────────────────────────────────────────
-# Main logic
+# Main
 # ────────────────────────────────────────────────
 print("Starting app icons fetch from CSV...\n")
 
 if not os.path.exists(CSV_FILE):
     raise FileNotFoundError(f"❌ {CSV_FILE} not found — run the apps list workflow first")
 
-# Read CSV and process unique valid packages
-processed = set()  # Track unique packages to avoid duplicates
+processed = set()
 success_count = 0
 failed_packages = []
 
@@ -75,25 +70,25 @@ with open(CSV_FILE, "r", encoding="utf-8") as f:
         platform = row.get("platform", "").strip().upper()
         
         if package == "unknown" or platform != "ANDROID" or package in processed:
-            continue  # Skip invalid or duplicates
+            continue
         
         print(f"📱 Processing package: {package}")
         processed.add(package)
         
         saved_path = fetch_app_icon(package)
         if saved_path:
-            print(f"   ✅ Saved icon: {saved_path}")
+            print(f"   ✅ Saved: {saved_path}")
             success_count += 1
         else:
             failed_packages.append(package)
 
-print("\n✅ Processing finished.")
-print(f"Total unique valid packages processed: {len(processed)}")
-print(f"Successful icons fetched: {success_count}")
+print("\n✅ Finished.")
+print(f"Processed unique packages: {len(processed)}")
+print(f"Successful icons: {success_count}")
 
 if failed_packages:
-    print(f"⚠️ {len(failed_packages)} package(s) failed:")
+    print(f"⚠️ Failed packages ({len(failed_packages)}):")
     for pkg in failed_packages:
         print(f"   - {pkg}")
 else:
-    print("All valid packages processed successfully!")
+    print("All valid packages fetched successfully!")
