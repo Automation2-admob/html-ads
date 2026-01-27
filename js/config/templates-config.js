@@ -11,7 +11,9 @@ const TEMPLATES = [
       tagline: true,
       icon: true,
       images: 0,
-      videos: 0
+      videos: 0,
+      features: false,
+      adLabels: true  // NEW: Advertisement labels
     }
   },
   { 
@@ -25,7 +27,9 @@ const TEMPLATES = [
       tagline: true,
       icon: false,
       images: 3,
-      videos: 0
+      videos: 0,
+      features: true,  // NEW: Feature names
+      adLabels: true   // NEW: Advertisement labels
     }
   },
   { 
@@ -39,7 +43,9 @@ const TEMPLATES = [
       tagline: true,
       icon: false,
       images: 3,
-      videos: 0
+      videos: 0,
+      features: true,  // NEW: Feature names
+      adLabels: true   // NEW: Advertisement labels
     }
   },
   { 
@@ -53,7 +59,9 @@ const TEMPLATES = [
       tagline: false,
       icon: false,
       images: 1,
-      videos: 0
+      videos: 0,
+      features: false,
+      adLabels: true   // NEW: Advertisement labels
     }
   },
   { 
@@ -67,7 +75,9 @@ const TEMPLATES = [
       tagline: false,
       icon: true,
       images: 0,
-      videos: 0
+      videos: 0,
+      features: false,
+      adLabels: true   // NEW: Advertisement labels
     }
   },
   { 
@@ -81,7 +91,9 @@ const TEMPLATES = [
       tagline: false,
       icon: false,
       images: 0,
-      videos: 1
+      videos: 1,
+      features: false,
+      adLabels: true   // NEW: Advertisement labels
     }
   },
 ];
