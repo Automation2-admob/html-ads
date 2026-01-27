@@ -1,4 +1,7 @@
 async function generateTemplate6HTML() {
+    const topLabel = adData.showAdLabels ? adData.topLabel : '';
+    const bottomLabel = adData.showAdLabels ? adData.bottomLabel : '';
+    
     return `<!doctype html>
 <html lang="en" style="height: 100%;">
 <head>
@@ -11,7 +14,6 @@ async function generateTemplate6HTML() {
     
     <style>
         :root {
-            --bg-top: #2e0249;
             --bg-bottom: #000000;
             --accent-neon: #ff00ff;
             --secondary-neon: #00d4ff;
@@ -38,17 +40,15 @@ async function generateTemplate6HTML() {
 
         .header { text-align: center; z-index: 100; }
         #app-title { 
-            font-size: 38px; 
+            font-size: 36px; 
             font-weight: 800; 
             background: linear-gradient(180deg, #FFFFFF 20%, var(--secondary-neon) 60%, var(--accent-neon) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-transform: uppercase;
-            letter-spacing: -2px;
-            transform: skewX(-5deg);
+            letter-spacing: -1px;
             filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.4));
             margin-bottom: 5px;
-            display: inline-block;
         }
 
         .feature-stage {
@@ -65,12 +65,10 @@ async function generateTemplate6HTML() {
             transform-style: preserve-3d;
             animation: paneRotate 8s ease-in-out infinite;
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 30px rgba(139, 92, 246, 0.2);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
 
         .scan-pane video {
@@ -80,6 +78,22 @@ async function generateTemplate6HTML() {
             display: block;
         }
 
+        .audio-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 32px;
+            height: 32px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 30;
+            cursor: pointer;
+            color: white;
+        }
+
         .scan-line {
             position: absolute;
             top: 0;
@@ -87,35 +101,9 @@ async function generateTemplate6HTML() {
             width: 100%;
             height: 4px;
             background: linear-gradient(to right, transparent, var(--secondary-neon), var(--accent-neon), var(--secondary-neon), transparent);
-            box-shadow: 0 0 20px var(--secondary-neon), 0 0 40px var(--accent-neon);
+            box-shadow: 0 0 15px var(--secondary-neon);
             z-index: 10;
-            animation: moveScan 4s ease-in-out infinite;
-        }
-
-        .ui-element {
-            position: absolute;
-            z-index: 20;
-            color: white;
-            font-size: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.8;
-        }
-
-        .ui-top { top: 15px; left: 15px; }
-        .ui-bottom { bottom: 15px; right: 15px; color: var(--accent-neon); }
-
-        .sparkle {
-            position: absolute;
-            width: 30px; height: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            animation: sparkleFloat 4s ease-in-out infinite;
-            z-index: 5;
+            animation: moveScan 4s linear infinite;
         }
 
         .cta-container { width: 100%; display: flex; flex-direction: column; align-items: center; z-index: 100; }
@@ -123,20 +111,19 @@ async function generateTemplate6HTML() {
         .start-now-btn {
             position: relative;
             background: linear-gradient(135deg, var(--accent-neon) 0%, #a100ff 100%);
-            padding: 12px 42px;
+            padding: 14px 48px;
             border-radius: 4px; 
             border: none;
             cursor: pointer;
             overflow: hidden;
             box-shadow: 0 8px 25px rgba(255, 0, 255, 0.4);
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .btn-text { 
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 800; 
             color: var(--pure-white) !important;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
             text-transform: uppercase;
         }
 
@@ -150,24 +137,19 @@ async function generateTemplate6HTML() {
         }
 
         @keyframes paneRotate {
-            0%, 100% { transform: rotateY(-15deg) rotateX(10deg); }
-            50% { transform: rotateY(15deg) rotateX(-5deg) scale(1.02); }
+            0%, 100% { transform: rotateY(-10deg) rotateX(5deg); }
+            50% { transform: rotateY(10deg) rotateX(-5deg); }
         }
 
         @keyframes moveScan {
-            0%, 100% { top: 0%; opacity: 0; }
-            50% { top: 100%; opacity: 1; }
+            0% { top: 0%; }
+            100% { top: 100%; }
         }
 
         @keyframes shimmerEffect {
             0% { left: -130%; }
             45% { left: 130%; }
             100% { left: 130%; }
-        }
-
-        @keyframes sparkleFloat {
-            0%, 100% { transform: translateY(0) scale(1); opacity: 0.5; }
-            50% { transform: translateY(-20px) scale(1.1); opacity: 1; }
         }
 
         .bg-orb {
@@ -191,29 +173,44 @@ async function generateTemplate6HTML() {
         </div>
 
         <div class="feature-stage">
-            <div class="sparkle" style="top: 20%; left: 10%;">✨</div>
-            <div class="sparkle" style="bottom: 25%; right: 10%; animation-delay: 1s;">📸</div>
-            
             <div class="scan-pane">
-                <div class="ui-element ui-top">REC ●</div>
                 <div class="scan-line"></div>
-                <video autoplay muted loop playsinline poster="feature_1_image.png">
-                    <source src="app_preview.mp4" type="video/mp4">
-                    <img src="feature_1_image.png" alt="Scan Preview" loading="lazy">
-                </video>
-                <div class="ui-element ui-bottom">LIVE</div>
+                <div class="audio-toggle" onclick="toggleAudio(event)">
+                <svg id="mute-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77zM3 9v6h4l5 5V4L7 9H3z"/>
+                </svg>
             </div>
-        </div>
 
-        <div class="cta-container">
-            <button class="start-now-btn" onclick="ExitApi.exit()">
-                <div class="glow-sweep"></div>
-                <span class="btn-text">START NOW</span>
-            </button>
-            <p style="color:white; font-size: 11px; margin-top: 14px; opacity: 0.8; letter-spacing: 1px; font-weight: 500;">INSTALL FREE</p>
+            <video id="ad-video" autoplay muted loop playsinline poster="feature_1_image.png">
+                <source src="app_preview.mp4" type="video/mp4">
+                <img src="feature_1_image.png" alt="Ad Preview" loading="lazy">
+            </video>
         </div>
     </div>
 
+    <div class="cta-container">
+        <button class="start-now-btn" onclick="ExitApi.exit()">
+            <div class="glow-sweep"></div>
+            <span class="btn-text">Install App</span>
+        </button>
+        ${bottomLabel ? `<p style="color:white; font-size: 10px; margin-top: 10px; opacity: 0.6; text-transform: uppercase;">${bottomLabel}</p>` : ''}
+    </div>
+</div>
+
+<script>
+    function toggleAudio(e) {
+        e.stopPropagation();
+        const video = document.getElementById('ad-video');
+        const icon = document.getElementById('mute-icon');
+        if (video.muted) {
+            video.muted = false;
+            icon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
+        } else {
+            video.muted = true;
+            icon.innerHTML = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
+        }
+    }
+</script>
 </body>
 </html>`;
 }
