@@ -1,4 +1,7 @@
 async function generateTemplate5HTML() {
+    const topLabel = adData.showAdLabels ? adData.topLabel : '';
+    const bottomLabel = adData.showAdLabels ? adData.bottomLabel : '';
+    
     return `<!doctype html>
 <html lang="en" style="height: 100%;">
 <head>
@@ -126,7 +129,8 @@ async function generateTemplate5HTML() {
             font-size: 11px;
             margin-top: 15px;
             letter-spacing: 1px;
-            font-weight: 500;
+            font-weight: 700;
+            text-transform: uppercase;
         }
     </style>
 </head>
@@ -147,7 +151,7 @@ async function generateTemplate5HTML() {
                 <span class="btn-text">Download The App</span>
             </button>
             
-            <p class="tap-hint">SECURE INSTALLATION</p>
+            ${bottomLabel ? `<p class="tap-hint">${bottomLabel}</p>` : ''}
         </div>
     </div>
 
