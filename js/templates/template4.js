@@ -1,4 +1,7 @@
 async function generateTemplate4HTML() {
+    const topLabel = adData.showAdLabels ? adData.topLabel : '';
+    const bottomLabel = adData.showAdLabels ? adData.bottomLabel : '';
+    
     return `<!doctype html>
 <html lang="en" style="height: 100%;">
 <head>
@@ -36,15 +39,27 @@ async function generateTemplate4HTML() {
             position: relative;
         }
 
+        .ad-label {
+            position: absolute;
+            top: 15px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #FFFFFF;
+            opacity: 0.6;
+            font-weight: 700;
+            text-transform: uppercase;
+            z-index: 110;
+        }
+
         .header { text-align: center; z-index: 100; }
         #app-title { 
-            font-size: 38px; 
+            font-size: 32px; 
             font-weight: 800; 
             background: linear-gradient(180deg, #FFFFFF 20%, var(--secondary-neon) 60%, var(--accent-neon) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-transform: uppercase;
-            letter-spacing: -2px;
+            letter-spacing: -1px;
             transform: skewX(-5deg);
             filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.4));
             margin-bottom: 5px;
@@ -59,15 +74,15 @@ async function generateTemplate4HTML() {
         }
 
         .scan-pane {
-            width: 220px;
-            height: 340px;
+            width: 210px;
+            height: 320px;
             position: relative;
             transform-style: preserve-3d;
             animation: paneRotate 8s ease-in-out infinite;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 30px rgba(139, 92, 246, 0.2);
@@ -89,22 +104,8 @@ async function generateTemplate4HTML() {
             background: linear-gradient(to right, transparent, var(--secondary-neon), var(--accent-neon), var(--secondary-neon), transparent);
             box-shadow: 0 0 20px var(--secondary-neon), 0 0 40px var(--accent-neon);
             z-index: 10;
-            animation: moveScan 4s ease-in-out infinite;
+            animation: moveScan 4s linear infinite;
         }
-
-        .ui-element {
-            position: absolute;
-            z-index: 20;
-            color: white;
-            font-size: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.8;
-        }
-
-        .ui-top { top: 15px; left: 15px; }
-        .ui-bottom { bottom: 15px; right: 15px; color: var(--accent-neon); }
 
         .sparkle {
             position: absolute;
@@ -118,17 +119,12 @@ async function generateTemplate4HTML() {
             z-index: 5;
         }
 
-        @keyframes sparkleFloat {
-            0%, 100% { transform: translateY(0) scale(1); opacity: 0.5; }
-            50% { transform: translateY(-20px) scale(1.1); opacity: 1; }
-        }
-
         .cta-container { width: 100%; display: flex; flex-direction: column; align-items: center; z-index: 100; }
         
         .start-now-btn {
             position: relative;
             background: linear-gradient(135deg, var(--accent-neon) 0%, #a100ff 100%);
-            padding: 12px 42px;
+            padding: 14px 50px;
             border-radius: 4px; 
             border: none;
             cursor: pointer;
@@ -140,10 +136,10 @@ async function generateTemplate4HTML() {
         .start-now-btn:active { transform: scale(0.95); }
 
         .btn-text { 
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 800; 
             color: var(--pure-white) !important;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
             text-transform: uppercase;
         }
 
@@ -157,19 +153,24 @@ async function generateTemplate4HTML() {
         }
 
         @keyframes paneRotate {
-            0%, 100% { transform: rotateY(-15deg) rotateX(10deg); }
-            50% { transform: rotateY(15deg) rotateX(-5deg) scale(1.02); }
+            0%, 100% { transform: rotateY(-12deg) rotateX(8deg); }
+            50% { transform: rotateY(12deg) rotateX(-5deg); }
         }
 
         @keyframes moveScan {
-            0%, 100% { top: 0%; opacity: 0; }
-            50% { top: 100%; opacity: 1; }
+            0% { top: 0%; }
+            100% { top: 100%; }
         }
 
         @keyframes shimmerEffect {
             0% { left: -130%; }
             45% { left: 130%; }
             100% { left: 130%; }
+        }
+
+        @keyframes sparkleFloat {
+            0%, 100% { transform: translateY(0) scale(1); opacity: 0.5; }
+            50% { transform: translateY(-20px) scale(1.1); opacity: 1; }
         }
 
         .bg-orb {
@@ -185,6 +186,8 @@ async function generateTemplate4HTML() {
 <body>
 
     <div id="ad-container">
+        ${topLabel ? `<div class="ad-label">${topLabel}</div>` : ''}
+        
         <div class="bg-orb" style="width:200px; height:200px; top:15%; right:5%;"></div>
         <div class="bg-orb" style="width:250px; height:250px; bottom:10%; left:-5%; background: var(--secondary-neon);"></div>
 
@@ -197,19 +200,17 @@ async function generateTemplate4HTML() {
             <div class="sparkle" style="bottom: 25%; right: 10%; animation-delay: 1s;">📸</div>
             
             <div class="scan-pane">
-                <div class="ui-element ui-top">REC ●</div>
                 <div class="scan-line"></div>
-                <img src="feature_1_image.png" alt="Scan Preview" loading="lazy">
-                <div class="ui-element ui-bottom">LIVE</div>
+                <img src="feature_1_image.png" alt="App Preview" loading="lazy">
             </div>
         </div>
 
         <div class="cta-container">
             <button class="start-now-btn" onclick="ExitApi.exit()">
                 <div class="glow-sweep"></div>
-                <span class="btn-text">START NOW</span>
+                <span class="btn-text">INSTALL NOW</span>
             </button>
-            <p style="color:white; font-size: 11px; margin-top: 14px; opacity: 0.8; letter-spacing: 1px; font-weight: 500;">INSTALL FREE</p>
+            ${bottomLabel ? `<p style="color:white; font-size: 10px; margin-top: 14px; opacity: 0.6; letter-spacing: 1px; font-weight: 700; text-transform: uppercase;">${bottomLabel}</p>` : ''}
         </div>
     </div>
 
