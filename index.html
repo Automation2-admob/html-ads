@@ -93,7 +93,13 @@
             language: 'en',
             icon: null,
             images: [],
-            videos: []
+            videos: [],
+            feature1: '',      // NEW
+            feature2: '',      // NEW
+            feature3: '',      // NEW
+            showAdLabels: false,  // NEW
+            topLabel: 'ADVERTISEMENT',  // NEW
+            bottomLabel: 'PROMOTED CONTENT'  // NEW
         };
 
         // Initialize App
@@ -389,6 +395,85 @@ function generateTemplatePreviewCard(template) {
                                     </div>
                                 </section>
                                 ` : ''}
+
+                                ${inputs.features ? `
+<!-- Feature Names (Template 2 & 3) -->
+<section class="space-y-4">
+    <label class="text-sm font-bold uppercase tracking-widest opacity-40">Feature Names (Optional)</label>
+    <div class="grid grid-cols-3 gap-3">
+        <input 
+            type="text" 
+            id="feature-1"
+            placeholder="Feature 1"
+            value="${adData.feature1}"
+            oninput="updateAdData('feature1', this.value)"
+            class="w-full p-3 rounded-xl border-2 outline-none focus:border-blue-500 transition-all text-sm ${inputClass}"
+        />
+        <input 
+            type="text" 
+            id="feature-2"
+            placeholder="Feature 2"
+            value="${adData.feature2}"
+            oninput="updateAdData('feature2', this.value)"
+            class="w-full p-3 rounded-xl border-2 outline-none focus:border-blue-500 transition-all text-sm ${inputClass}"
+        />
+        <input 
+            type="text" 
+            id="feature-3"
+            placeholder="Feature 3"
+            value="${adData.feature3}"
+            oninput="updateAdData('feature3', this.value)"
+            class="w-full p-3 rounded-xl border-2 outline-none focus:border-blue-500 transition-all text-sm ${inputClass}"
+        />
+    </div>
+    <p class="text-xs opacity-50">Leave empty to use defaults: "Real-Time Scan", "Video Effects", "Easy Sharing"</p>
+</section>
+` : ''}
+
+${inputs.adLabels ? `
+<!-- Advertisement Labels Toggle -->
+<section class="space-y-4">
+    <div class="flex items-center justify-between">
+        <label class="text-sm font-bold uppercase tracking-widest opacity-40">Advertisement Labels</label>
+        <label class="relative inline-flex items-center cursor-pointer">
+            <input 
+                type="checkbox" 
+                id="ad-labels-toggle"
+                ${adData.showAdLabels ? 'checked' : ''}
+                onchange="toggleAdLabels(this.checked)"
+                class="sr-only peer"
+            />
+            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+        </label>
+    </div>
+    
+    <div id="ad-labels-options" style="display: ${adData.showAdLabels ? 'block' : 'none'};" class="space-y-3">
+        <div>
+            <label class="text-xs font-bold uppercase tracking-widest opacity-30 mb-2 block">Top Label</label>
+            <input 
+                type="text" 
+                id="top-label"
+                placeholder="ADVERTISEMENT"
+                value="${adData.topLabel}"
+                oninput="updateAdData('topLabel', this.value)"
+                class="w-full p-3 rounded-xl border-2 outline-none focus:border-blue-500 transition-all text-sm ${inputClass}"
+            />
+        </div>
+        <div>
+            <label class="text-xs font-bold uppercase tracking-widest opacity-30 mb-2 block">Bottom Label</label>
+            <select 
+                id="bottom-label"
+                onchange="updateAdData('bottomLabel', this.value)"
+                class="w-full p-3 rounded-xl border-2 outline-none focus:border-blue-500 transition-all text-sm ${inputClass}"
+            >
+                <option value="PROMOTED CONTENT" ${adData.bottomLabel === 'PROMOTED CONTENT' ? 'selected' : ''}>PROMOTED CONTENT</option>
+                <option value="PROMOTED APP CONTENT" ${adData.bottomLabel === 'PROMOTED APP CONTENT' ? 'selected' : ''}>PROMOTED APP CONTENT</option>
+                <option value="SPONSORED" ${adData.bottomLabel === 'SPONSORED' ? 'selected' : ''}>SPONSORED</option>
+            </select>
+        </div>
+    </div>
+</section>
+` : ''}
 
                                 <!-- Asset Upload Section -->
                                 <section class="grid ${inputs.icon && (inputs.images > 0 || inputs.videos > 0) ? 'grid-cols-2' : 'grid-cols-1'} gap-6 pt-6 border-t ${isDarkMode ? 'border-slate-800/50' : 'border-slate-200'}">
@@ -753,6 +838,15 @@ function renderPreview() {
                 }
             });
         }
+        // Toggle Ad Labels
+function toggleAdLabels(checked) {
+    adData.showAdLabels = checked;
+    const options = document.getElementById('ad-labels-options');
+    if (options) {
+        options.style.display = checked ? 'block' : 'none';
+    }
+    updateAdData('preview', true);
+}
 
         // Initialize on Load
         window.addEventListener('load', initApp);
