@@ -5,8 +5,8 @@ async function generateTemplate2HTML() {
     const feature3 = adData.feature3 || 'Easy Sharing';
     
     // Ad labels
-    const topLabel = adData.showAdLabels ? adData.topLabel : '';
-    const bottomLabel = adData.showAdLabels ? adData.bottomLabel : '';
+    const topLabel = adData.showAdLabels ? 'ADVERTISEMENT' : '';
+    const bottomLabel = adData.showAdLabels ? 'PROMOTED APP CONTENT' : '';
     
     return `<!doctype html>
 <html lang="en" style="height: 100%;">
