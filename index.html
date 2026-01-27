@@ -97,9 +97,7 @@
             feature1: '',      // NEW
             feature2: '',      // NEW
             feature3: '',      // NEW
-            showAdLabels: false,  // NEW
-            topLabel: 'ADVERTISEMENT',  // NEW
-            bottomLabel: 'PROMOTED CONTENT'  // NEW
+            showAdLabels: false
         };
 
         // Initialize App
@@ -434,7 +432,10 @@ ${inputs.adLabels ? `
 <!-- Advertisement Labels Toggle -->
 <section class="space-y-4">
     <div class="flex items-center justify-between">
-        <label class="text-sm font-bold uppercase tracking-widest opacity-40">Advertisement Labels</label>
+        <div>
+            <label class="text-sm font-bold uppercase tracking-widest opacity-40">Advertisement Labels</label>
+            <p class="text-xs opacity-30 mt-1">Add "ADVERTISEMENT" and "PROMOTED APP CONTENT" labels</p>
+        </div>
         <label class="relative inline-flex items-center cursor-pointer">
             <input 
                 type="checkbox" 
@@ -447,29 +448,20 @@ ${inputs.adLabels ? `
         </label>
     </div>
     
-    <div id="ad-labels-options" style="display: ${adData.showAdLabels ? 'block' : 'none'};" class="space-y-3">
-        <div>
-            <label class="text-xs font-bold uppercase tracking-widest opacity-30 mb-2 block">Top Label</label>
-            <input 
-                type="text" 
-                id="top-label"
-                placeholder="ADVERTISEMENT"
-                value="${adData.topLabel}"
-                oninput="updateAdData('topLabel', this.value)"
-                class="w-full p-3 rounded-xl border-2 outline-none focus:border-blue-500 transition-all text-sm ${inputClass}"
-            />
+    <div id="ad-labels-preview" style="display: ${adData.showAdLabels ? 'block' : 'none'};" class="space-y-3 p-4 rounded-xl ${isDarkMode ? 'bg-[#0a0c10] border border-slate-800' : 'bg-slate-50 border border-slate-200'}">
+        <div class="flex items-center gap-3">
+            <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider opacity-60">Top Label</p>
+                <p class="text-sm font-black">ADVERTISEMENT</p>
+            </div>
         </div>
-        <div>
-            <label class="text-xs font-bold uppercase tracking-widest opacity-30 mb-2 block">Bottom Label</label>
-            <select 
-                id="bottom-label"
-                onchange="updateAdData('bottomLabel', this.value)"
-                class="w-full p-3 rounded-xl border-2 outline-none focus:border-blue-500 transition-all text-sm ${inputClass}"
-            >
-                <option value="PROMOTED CONTENT" ${adData.bottomLabel === 'PROMOTED CONTENT' ? 'selected' : ''}>PROMOTED CONTENT</option>
-                <option value="PROMOTED APP CONTENT" ${adData.bottomLabel === 'PROMOTED APP CONTENT' ? 'selected' : ''}>PROMOTED APP CONTENT</option>
-                <option value="SPONSORED" ${adData.bottomLabel === 'SPONSORED' ? 'selected' : ''}>SPONSORED</option>
-            </select>
+        <div class="flex items-center gap-3">
+            <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider opacity-60">Bottom Label</p>
+                <p class="text-sm font-black">PROMOTED APP CONTENT</p>
+            </div>
         </div>
     </div>
 </section>
@@ -693,20 +685,23 @@ function renderPreview() {
     return previewHTML;
 }
 
-        // Template Selection
-        function selectTemplate(id) {
-            selectedTemplate = TEMPLATES.find(t => t.id === id);
-            // Reset adData when switching templates
-            adData = {
-                title: '',
-                tagline: '',
-                language: 'en',
-                icon: null,
-                images: [],
-                videos: []
-            };
-            showPage('editor');
-        }
+        // Template Selection (UPDATED)
+function selectTemplate(id) {
+    selectedTemplate = TEMPLATES.find(t => t.id === id);
+    adData = {
+        title: '',
+        tagline: '',
+        language: 'en',
+        icon: null,
+        images: [],
+        videos: [],
+        feature1: '',
+        feature2: '',
+        feature3: '',
+        showAdLabels: false
+    };
+    showPage('editor');
+}
 
         // Scroll Templates
         function scrollTemplates(direction) {
@@ -838,12 +833,12 @@ function renderPreview() {
                 }
             });
         }
-        // Toggle Ad Labels
+// Toggle Ad Labels (SIMPLIFIED)
 function toggleAdLabels(checked) {
     adData.showAdLabels = checked;
-    const options = document.getElementById('ad-labels-options');
-    if (options) {
-        options.style.display = checked ? 'block' : 'none';
+    const preview = document.getElementById('ad-labels-preview');
+    if (preview) {
+        preview.style.display = checked ? 'block' : 'none';
     }
     updateAdData('preview', true);
 }
