@@ -176,7 +176,7 @@ function renderHomePage() {
             <div id="template-scroll" class="flex gap-6 overflow-x-auto pb-12 scrollbar-hide snap-x snap-mandatory">
                 ${TEMPLATES.map(template => `
                     <div onclick="selectTemplate(${template.id})" class="min-w-[400px] md:min-w-[480px] snap-center group relative overflow-hidden rounded-[2.5rem] border transition-all hover:border-blue-500/50 cursor-pointer ${cardClass}">
-                        <div class="aspect-[4/3] overflow-hidden relative bg-black">
+                        <div class="aspect-[3/4] overflow-hidden relative bg-black">
                             ${generateTemplatePreviewCard(template)}
                             <div class="absolute inset-0 bg-gradient-to-t from-[#151921] via-transparent to-transparent opacity-40"></div>
                             <div class="absolute top-6 left-6">
