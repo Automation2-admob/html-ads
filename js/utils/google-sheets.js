@@ -5,7 +5,7 @@ let appsCache = null;
 // Fetch Apps from Google Sheets
 async function fetchAppsFromSheet() {
     const apiKey = getSheetsApiKey();
-    const sheetId = API_CONFIG.GOOGLE_SHEET_ID;
+    const sheetId = getSheetId();
     const range = API_CONFIG.SHEET_RANGE;
 
     if (!apiKey || !sheetId) {
@@ -21,6 +21,11 @@ async function fetchAppsFromSheet() {
     try {
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
         const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
 
         if (data.values && data.values.length > 1) {
