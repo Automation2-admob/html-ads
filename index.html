@@ -68,12 +68,6 @@
     <script src="js/config/languages.js"></script>
     <script src="js/config/templates-config.js"></script>
     <script src="js/config/api-config.js"></script>
-
-    <!-- Load API keys (local only - won't exist on GitHub) -->
-    <script src="js/config/api-keys.js" onerror="console.log('No local API keys found')"></script>
-
-<!-- Load API config (uses keys from api-keys.js if available) -->
-    <script src="js/config/api-config.js"></script>
     
     <!-- Load Utility Files -->
     <script src="js/utils/google-sheets.js"></script>
@@ -108,24 +102,10 @@
         };
 
         // Initialize App
-        // Page Navigation (UPDATED)
-function showPage(page) {
-    currentPage = page;
-    const mainContent = document.getElementById('main-content');
-    
-    if (page === 'home') {
-        mainContent.innerHTML = renderHomePage();
-    } else if (page === 'editor') {
-        mainContent.innerHTML = renderEditorPage();
-        // Initialize app dropdown after rendering
-        setTimeout(() => {
-            initializeAppDropdown();
-        }, 100);
-    }
-    
-    lucide.createIcons();
-    window.scrollTo(0, 0);
-}
+        function initApp() {
+            showPage('home');
+            lucide.createIcons();
+        }
 
         // Dark Mode Toggle
         function toggleDarkMode() {
@@ -360,55 +340,10 @@ function generateTemplatePreviewCard(template) {
                             <div class="space-y-8">
                                 
                                 ${inputs.title ? `
-<!-- Title with Google Sheets Dropdown -->
-<section class="space-y-4">
-    <div class="flex items-center justify-between">
-        <label class="text-sm font-bold uppercase tracking-widest opacity-40">App Title *</label>
-        ${inputs.tagline ? `
-        <button onclick="getSuggestions()" id="suggest-btn" class="text-[10px] flex items-center gap-1.5 bg-blue-600/10 text-blue-500 px-3 py-1.5 rounded-full font-bold uppercase hover:bg-blue-600/20 transition-all">
-            <i data-lucide="sparkles" class="w-3 h-3"></i> Get Suggestions
-        </button>
-        ` : ''}
-    </div>
-    
-    <!-- App Selection Mode Toggle -->
-    <div class="flex gap-2 p-1 rounded-xl ${isDarkMode ? 'bg-[#0a0c10]' : 'bg-slate-100'}">
-        <button onclick="toggleAppInputMode('dropdown')" id="mode-dropdown" class="flex-1 px-4 py-2 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white">
-            <i data-lucide="list" class="w-3 h-3 inline mr-1"></i> Select from List
-        </button>
-        <button onclick="toggleAppInputMode('custom')" id="mode-custom" class="flex-1 px-4 py-2 rounded-lg text-xs font-bold transition-all ${isDarkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-200'}">
-            <i data-lucide="edit" class="w-3 h-3 inline mr-1"></i> Custom Name
-        </button>
-    </div>
-    
-    <!-- Dropdown Mode -->
-    <div id="app-dropdown-container" style="display: block;">
-        <select 
-            id="app-dropdown"
-            onchange="selectAppFromDropdown(this.value)"
-            class="w-full p-5 rounded-2xl border-2 outline-none focus:border-blue-500 transition-all font-bold text-lg ${inputClass}"
-        >
-            <option value="">Loading apps...</option>
-        </select>
-        <p class="text-xs opacity-50 mt-2">Select an app from your Google Sheet</p>
-    </div>
-    
-    <!-- Custom Input Mode -->
-    <div id="app-custom-container" style="display: none;">
-        <input 
-            type="text" 
-            id="app-title-custom"
-            placeholder="e.g. FitTrack Pro"
-            value="${adData.title}"
-            oninput="updateAdData('title', this.value)"
-            class="w-full p-5 rounded-2xl border-2 outline-none focus:border-blue-500 transition-all font-bold text-lg ${inputClass}"
-        />
-        <p class="text-xs opacity-50 mt-2">Enter your app name manually</p>
-    </div>
-    
-    ${inputs.tagline ? '<div id="suggestions-container"></div>' : ''}
-</section>
-` : ''}
+                                <!-- Title & Suggestions -->
+                                <section class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <label class="text-sm font-bold uppercase tracking-widest opacity-40">App Title *</label>
                                         ${inputs.tagline ? `
                                         <button onclick="getSuggestions()" id="suggest-btn" class="text-[10px] flex items-center gap-1.5 bg-blue-600/10 text-blue-500 px-3 py-1.5 rounded-full font-bold uppercase hover:bg-blue-600/20 transition-all">
                                             <i data-lucide="sparkles" class="w-3 h-3"></i> Get Suggestions
@@ -907,91 +842,6 @@ function toggleAdLabels(checked) {
         preview.style.display = checked ? 'block' : 'none';
     }
     updateAdData('preview', true);
-}
-
-// App Input Mode State
-let appInputMode = 'dropdown';
-
-// Toggle App Input Mode
-function toggleAppInputMode(mode) {
-    appInputMode = mode;
-    
-    const dropdownContainer = document.getElementById('app-dropdown-container');
-    const customContainer = document.getElementById('app-custom-container');
-    const dropdownBtn = document.getElementById('mode-dropdown');
-    const customBtn = document.getElementById('mode-custom');
-    
-    if (!dropdownContainer || !customContainer) return;
-    
-    if (mode === 'dropdown') {
-        dropdownContainer.style.display = 'block';
-        customContainer.style.display = 'none';
-        
-        if (dropdownBtn && customBtn) {
-            dropdownBtn.className = 'flex-1 px-4 py-2 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white';
-            customBtn.className = `flex-1 px-4 py-2 rounded-lg text-xs font-bold transition-all ${isDarkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-200'}`;
-        }
-    } else {
-        dropdownContainer.style.display = 'none';
-        customContainer.style.display = 'block';
-        
-        if (dropdownBtn && customBtn) {
-            customBtn.className = 'flex-1 px-4 py-2 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white';
-            dropdownBtn.className = `flex-1 px-4 py-2 rounded-lg text-xs font-bold transition-all ${isDarkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-200'}`;
-        }
-    }
-    
-    lucide.createIcons();
-}
-
-// Load Apps into Dropdown
-async function loadAppsDropdown() {
-    const dropdown = document.getElementById('app-dropdown');
-    if (!dropdown) return;
-    
-    dropdown.innerHTML = '<option value="">Loading apps...</option>';
-    
-    const apps = await fetchAppsFromSheet();
-    
-    if (apps.length === 0) {
-        dropdown.innerHTML = '<option value="">No apps found - Check API configuration</option>';
-        return;
-    }
-    
-    dropdown.innerHTML = '<option value="">Select an app...</option>';
-    apps.forEach(app => {
-        const option = document.createElement('option');
-        option.value = JSON.stringify(app);
-        option.textContent = `${app.name}${app.package ? ' (' + app.package + ')' : ''}`;
-        dropdown.appendChild(option);
-    });
-}
-
-// Select App from Dropdown
-function selectAppFromDropdown(value) {
-    if (!value) {
-        updateAdData('title', '');
-        return;
-    }
-    
-    try {
-        const app = JSON.parse(value);
-        updateAdData('title', app.name);
-        
-        // Optionally store package name for future use
-        if (app.package) {
-            adData.packageName = app.package;
-        }
-    } catch (error) {
-        console.error('Error parsing app data:', error);
-    }
-}
-
-// Initialize App Dropdown on Editor Page Load
-function initializeAppDropdown() {
-    if (document.getElementById('app-dropdown')) {
-        loadAppsDropdown();
-    }
 }
 
         // Initialize on Load
