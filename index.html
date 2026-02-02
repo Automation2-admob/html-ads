@@ -68,6 +68,12 @@
     <script src="js/config/languages.js"></script>
     <script src="js/config/templates-config.js"></script>
     <script src="js/config/api-config.js"></script>
+
+    <!-- Load API keys (local only - won't exist on GitHub) -->
+    <script src="js/config/api-keys.js" onerror="console.log('No local API keys found')"></script>
+
+<!-- Load API config (uses keys from api-keys.js if available) -->
+    <script src="js/config/api-config.js"></script>
     
     <!-- Load Utility Files -->
     <script src="js/utils/google-sheets.js"></script>
